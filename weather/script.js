@@ -48,7 +48,23 @@ const WEATHER_ICONS = {
     'Thunderstorm': '⛈️'
 };
 
-async function getLocation() {
+async function getLocationFromZip(zipCode) {
+    try {
+        const response = await fetch(`https://api.zippopotam.us/us/${zipCode}`);
+        const data = await response.json();
+        const place = data.places[0];
+        return {
+            city: `${place['place name']}, ${place['state abbreviation']}`,
+            lat: parseFloat(place.latitude),
+            lon: parseFloat(place.longitude)
+        };
+    } catch (error) {
+        console.error('Error getting location from ZIP:', error);
+        return null;
+    }
+}
+
+async function getLocationFromIP() {
     try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
@@ -58,7 +74,7 @@ async function getLocation() {
             lon: data.longitude
         };
     } catch (error) {
-        console.error('Error getting location:', error);
+        console.error('Error getting location from IP:', error);
         return null;
     }
 }
@@ -97,17 +113,15 @@ function updateWeather(weatherData) {
     const temps = weatherData.hourly.temperature_2m;
     const codes = weatherData.hourly.weathercode;
     
-    /* Update Current Weather */
     const currentTemp = temps[currentHour];
     const currentCode = codes[currentHour];
     const weatherType = WMO_CODES[currentCode];
     
     document.getElementById('weather-type').textContent = weatherType;
     document.getElementById('temp-f').textContent = `${Math.round(currentTemp)}°F`;
-    document.getElementById('temp-c').textContent = 
-        `(${fahrenheitToCelsius(currentTemp)}°C)`;
+    document.getElementById('temp-c').textContent = `(${fahrenheitToCelsius(currentTemp)}°C)`;
+    document.getElementById('weather-icon').textContent = WEATHER_ICONS[weatherType];
 
-    /* Update Forecast */
     const forecastDiv = document.getElementById('forecast');
     forecastDiv.innerHTML = '';
 
@@ -133,13 +147,26 @@ function updateWeather(weatherData) {
 }
 
 async function initialize() {
-    const location = await getLocation();
+    const urlParams = new URLSearchParams(window.location.search);
+    const zipCode = urlParams.get('zip');
+    const brandName = urlParams.get('brand') || '';
+    
+    document.getElementById('brand-name').textContent = brandName;
+
+    let location;
+    if (zipCode) {
+        location = await getLocationFromZip(zipCode);
+    }
+    
+    if (!location) {
+        location = await getLocationFromIP();
+    }
+
     if (location) {
         document.getElementById('location').textContent = location.city;
         const weatherData = await getWeather(location.lat, location.lon);
         if (weatherData) {
             updateWeather(weatherData);
-            /* Update every 30m */
             setInterval(async () => {
                 const newWeatherData = await getWeather(location.lat, location.lon);
                 if (newWeatherData) updateWeather(newWeatherData);
@@ -148,13 +175,7 @@ async function initialize() {
     }
 
     updateDateTime();
-    /* Update time every minute */
     setInterval(updateDateTime, 60 * 1000);
 }
-
-/* Get Brand from URL */
-const urlParams = new URLSearchParams(window.location.search);
-const brandName = urlParams.get('brand') || '';
-document.getElementById('brand-name').textContent = brandName;
 
 initialize();

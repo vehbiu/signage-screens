@@ -5,4 +5,10 @@ A collection of digital signage screens for the general usage.
 
 #### Weather
 - [Link](https://vehbiu.github.io/signage-screens/weather/index.html)
-- Params: `brand` (default: blank)
+- Params: 
+- - `brand`:
+- - - brand name on the top right corner
+- - - default: blank
+- - `zip`: 
+- - - zip code for the weather
+- - - default: 10001

@@ -2,33 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header class="header">
             <div class="location-info">
-                <div class="location" id="location">Loading...</div>
-                <div class="datetime" id="datetime"></div>
+                <div id="location" class="location">Loading...</div>
+                <div id="datetime" class="datetime"></div>
             </div>
-            <div class="org-name" id="brand-name"></div>
-        </div>
-        <div></div>
-        <div class="footer">
+            <div id="brand-name" class="org-name"></div>
+        </header>
+        
+        <main></main>
+        
+        <footer class="footer">
             <div class="current-weather">
-                <div class="weather-type" id="weather-type">Loading...</div>
+                <div id="weather-type" class="weather-type">Loading...</div>
+                <div id="weather-icon" class="weather-icon"></div>
                 <div class="temperature">
                     <span id="temp-f">--°F</span>
-                    <span class="celsius" id="temp-c">(--°C)</span>
+                    <span id="temp-c" class="celsius">(--°C)</span>
                 </div>
             </div>
-            <div class="forecast" id="forecast">
-                <!-- Populated by JavaScript -->
-            </div>
-        </div>
+            <div id="forecast" class="forecast"></div>
+        </footer>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
